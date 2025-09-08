@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - JWT Authentication{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="auth-header">
+        <h2><i class="fas fa-shield-alt"></i> JWT Authentication System</h2>
+        <p>Secure user authentication with Django and JWT</p>
+    </div>
+    
+    <div class="text-center">
+        <div class="mb-4">
+            <i class="fas fa-lock text-primary" style="font-size: 4rem;"></i>
+        </div>
+        
+        <p class="mb-4">Welcome to our secure authentication system. Please choose an option below:</p>
+        
+        <div class="d-grid gap-3">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-user-plus"></i> Create Account
+            </a>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Features:</strong>
+            <ul class="mb-0 mt-2">
+                <li>Secure JWT-based authentication</li>
+                <li>Password reset functionality</li>
+                <li>User profile management</li>
+                <li>Modern responsive design</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

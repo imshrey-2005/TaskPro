@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - JWT Authentication{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="auth-header">
+        <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+        <p>Sign in to your account</p>
+    </div>
+    
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="id_email" class="form-label">
+                <i class="fas fa-envelope"></i> Email Address
+            </label>
+            <input type="email" class="form-control" id="id_email" name="email" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="id_password" class="form-label">
+                <i class="fas fa-lock"></i> Password
+            </label>
+            <input type="password" class="form-control" id="id_password" name="password" required>
+        </div>
+        
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </div>
+    </form>
+    
+    <div class="text-center mt-4">
+        <p class="mb-2">
+            <a href="{% url 'reset-password-email' %}" class="nav-link">
+                <i class="fas fa-key"></i> Forgot Password?
+            </a>
+        </p>
+        <p class="mb-0">Don't have an account? 
+            <a href="{% url 'register' %}" class="nav-link">Sign Up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+

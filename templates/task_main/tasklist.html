@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block content %}
+<h3>{{user.first_name}} {{user.last_name}}</h3>
+{% if tasks %}
+    <h1>Tasks</h1>
+    
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task.title }} - {{ task.description }} - {{ task.expiry }} - {{ task.priority }} - {{ task.status }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h1>No tasks found</h1>
+{% endif %}
+{% endblock %}
+

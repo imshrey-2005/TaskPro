@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Logged Out - JWT Authentication{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="auth-header">
+        <h2><i class="fas fa-sign-out-alt"></i> Successfully Logged Out</h2>
+        <p>You have been logged out of your account</p>
+    </div>
+    
+    <div class="text-center">
+        <div class="mb-4">
+            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+        </div>
+        
+        <p class="mb-4">Thank you for using our service. You can now safely close your browser.</p>
+        
+        <div class="d-grid gap-2">
+            <a href="{% url 'login' %}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Sign In Again
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary">
+                <i class="fas fa-user-plus"></i> Create New Account
+            </a>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <div class="alert alert-info">
+            <i class="fas fa-shield-alt"></i>
+            <strong>Security Note:</strong>
+            <p class="mb-0 mt-2">
+                For your security, please clear your browser cache and cookies 
+                if you're using a shared computer.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
