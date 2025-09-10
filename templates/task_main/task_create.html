@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Task Create{% endblock %}
+
+{% block content %}
+<div class="auth-card d-flex-column justify-content-between align-items-center mb-3">
+    <div class="auth-header d-flex justify-content-between align-items-center mb-3">
+        <h2>Create a Task</h2>
+        <a type="button" method="get" href="{% url 'tasklist' %}" class="btn-close" ></a>
+    </div>
+    
+    <form method="post" action="{% url 'taskcreate' %}">
+        {% csrf_token %}
+
+        <div class="form-floating mb-3">
+           
+            <input type="text" class="form-control " id="floatingInput" name="title" required>
+            <label for="floatingInput" class="form-label">
+                Title
+            </label>
+        </div>
+        
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control " id="id_description" name="description" required>
+             <label for="id_description" class="form-label">
+                Description
+            </label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="date" class="form-control " id="id_expiry" name="expiry" required>
+            <label for="id_expiry" class="form-label">
+                Due Date
+            </label>
+        </div>
+        
+        
+        <div class="form-floating mb-3">
+            <select class="form-select" id="floatingSelect" aria-label="Floating label select example" name="priority"  required>
+                <option selected>Open this select menu</option>
+                <option value="Lowest">Lowest</option>
+                 <option value="Low">Low</option>
+                 <option value="Medium">Medium</option>
+                 <option value="High">High</option>
+                <option value="Critical">Critical</option>
+            </select>
+            <label for="floatingSelect">Select the priority</label>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" id="floatingSelect" aria-label="Floating label select example" name="status"  required>
+                <option selected>Open this select menu</option>
+                <option value="pending">Pending</option>
+                 <option value="in progress">In Progress</option>
+                 <option value="done">Done</option>
+            </select>
+            <label for="floatingSelect">Select the status</label>
+        </div>
+        
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Add
+            </button>
+        </div>
+    </form>
+    
+    
+{% endblock %}
+

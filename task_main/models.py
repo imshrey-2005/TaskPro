@@ -3,6 +3,7 @@ from accounts.models import CustomUser
 from django.utils.text import slugify
 #title, description, due date, priority, status
 priority_choices=[('Critical','10'),('High', '8'),('Medium', '6'),('Low', '4'),('Lowest', '2')]
+status_choices=[('pending','PENDING'),('in progress','IN PROGRESS'),('done','DONE')]
 # Create your models here.
 class Tasks(models.Model):
     title=models.CharField(max_length=50,)
@@ -10,7 +11,7 @@ class Tasks(models.Model):
     description=models.CharField(max_length=255)
     expiry=models.DateField(verbose_name='Due Date',auto_now_add=True)
     priority=models.CharField(max_length=10,choices=priority_choices,default='Lowest')
-    status=models.BooleanField(default=False)
+    status=models.CharField(choices=status_choices,default='pending')
     user=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
 
     def __str__(self):

@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework import status
 from .serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordSerializer,UserResetPasswordEmailSerializer,UserResetPasswordSerializer
 from django.contrib.auth import authenticate, login, logout
@@ -33,9 +34,10 @@ def home_view(request):
 class UserRegistrationView(GenericAPIView):
     permission_classes=[AllowAny,]
     serializer_class = UserRegistrationSerializer
+    renderer_classes=[TemplateHTMLRenderer]
 
     def get(self, request):
-        return render(request, 'accounts/register.html')
+        return Response({}, template_name='accounts/register.html')
 
     def post(self,request):
         serializer=self.get_serializer(data=request.data)
@@ -48,36 +50,37 @@ class UserRegistrationView(GenericAPIView):
             for field, errors in serializer.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
-            return render(request, 'accounts/register.html')
+            return Response({'errors': serializer.errors}, template_name='accounts/register.html')
 
 class UserLoginView(GenericAPIView):
     permission_classes=[AllowAny,]
     serializer_class = UserLoginSerializer
+    renderer_classes=[TemplateHTMLRenderer]
 
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect('profile')
-        return render(request, 'accounts/login.html')
+            return redirect('tasklist')
+        return Response({}, template_name='accounts/login.html')
 
     def post(self, request):
         serializer=self.get_serializer(data=request.data)
         if serializer.is_valid():
-            email=serializer.data.get('email')
-            password=serializer.data.get('password')
+            email=serializer.validated_data.get('email')
+            password=serializer.validated_data.get('password')
             user=authenticate(email=email, password=password)
             if user is not None:
                 login(request, user)
                 token=get_tokens_for_user(user)
                 messages.success(request, f'Welcome back, {user.first_name or user.email}!')
-                return redirect('profile')
+                return redirect('tasklist')
             else:
                 messages.error(request, 'Email or Password is not valid')
-                return render(request, 'accounts/login.html')
+                return Response({}, template_name='accounts/login.html')
         else:
             for field, errors in serializer.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
-            return render(request, 'accounts/login.html')
+            return Response({'errors': serializer.errors}, template_name='accounts/login.html')
 
 class UserLogoutAPIView(GenericAPIView):
     """
@@ -85,6 +88,7 @@ class UserLogoutAPIView(GenericAPIView):
     """
 
     permission_classes = [IsAuthenticated,]
+    renderer_classes=[TemplateHTMLRenderer]
 
     def get(self, request):
         refresh_token = request.data.get("refresh")
@@ -93,7 +97,7 @@ class UserLogoutAPIView(GenericAPIView):
             token.blacklist()
         logout(request)
         messages.success(request, 'You have been successfully logged out.')
-        return render(request,'accounts/logout.html')
+        return Response({}, template_name='accounts/logout.html')
         
 
     def post(self, request, *args, **kwargs):
@@ -104,18 +108,19 @@ class UserLogoutAPIView(GenericAPIView):
                 token.blacklist()
             logout(request)
             messages.success(request, 'You have been successfully logged out.')
-            return render(request,'accounts/logout.html')
+            return Response({}, template_name='accounts/logout.html')
         except Exception as e:
             logout(request)
             messages.success(request, 'You have been successfully logged out.')
-            return render(request,'accounts/logout.html')
+            return Response({}, template_name='accounts/logout.html')
 
 class UserProfileView(GenericAPIView):
     permission_classes=[IsAuthenticated,]
     serializer_class=UserProfileSerializer
+    renderer_classes=[TemplateHTMLRenderer]
 
     def get(self,request):
-        return render(request, 'accounts/profile.html', {'user': request.user})
+        return Response({'user': request.user}, template_name='accounts/profile.html')
 
     def handle_exception(self, exc):
         from rest_framework.exceptions import NotAuthenticated
@@ -127,10 +132,11 @@ class UserProfileView(GenericAPIView):
 
 class UserChangePasswordView(GenericAPIView):
     serializer_class=UserChangePasswordSerializer
+    renderer_classes=[TemplateHTMLRenderer]
     
 
     def get(self, request):
-        return render(request, 'accounts/change_password.html')
+        return Response({}, template_name='accounts/change_password.html')
 
     def post(self,request):
         serializer=self.get_serializer(data=request.data,context={'user':request.user})
@@ -141,13 +147,14 @@ class UserChangePasswordView(GenericAPIView):
             for field, errors in serializer.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
-            return render(request, 'accounts/change_password.html')
+            return Response({'errors': serializer.errors}, template_name='accounts/change_password.html')
 
 class UserResetPasswordEmailView(GenericAPIView):
     serializer_class=UserResetPasswordEmailSerializer
+    renderer_classes=[TemplateHTMLRenderer]
     
     def get(self, request):
-        return render(request, 'accounts/reset_password_email.html')
+        return Response({}, template_name='accounts/reset_password_email.html')
     
     def post(self,request):
         serializer=self.get_serializer(data=request.data)
@@ -158,15 +165,16 @@ class UserResetPasswordEmailView(GenericAPIView):
             for field, errors in serializer.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
-            return render(request, 'accounts/reset_password_email.html')
+            return Response({'errors': serializer.errors}, template_name='accounts/reset_password_email.html')
 
 
 class UserResetPasswordView(GenericAPIView):
    
     serializer_class=UserResetPasswordSerializer
+    renderer_classes=[TemplateHTMLRenderer]
     
     def get(self, request, uid, token):
-        return render(request, 'accounts/reset_password.html', {'uid': uid, 'token': token})
+        return Response({'uid': uid, 'token': token}, template_name='accounts/reset_password.html')
     
     def post(self,request,uid,token):
         serializer=self.get_serializer(data=request.data,context={'uid':uid,'token':token})
@@ -177,7 +185,7 @@ class UserResetPasswordView(GenericAPIView):
             for field, errors in serializer.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
-            return render(request, 'accounts/reset_password.html', {'uid': uid, 'token': token})
+            return Response({'uid': uid, 'token': token, 'errors': serializer.errors}, template_name='accounts/reset_password.html')
 
 
 

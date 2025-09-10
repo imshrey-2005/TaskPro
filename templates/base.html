@@ -28,6 +28,7 @@
             width: 100%;
             max-width: 450px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 0 auto;
         }
         .auth-header {
             text-align: center;
@@ -42,17 +43,7 @@
             color: #666;
             margin: 0;
         }
-        .form-control {
-            border-radius: 10px;
-            border: 2px solid #e1e5e9;
-            padding: 12px 15px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
+        
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
@@ -66,37 +57,26 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
-        .form-label {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
+      
         .alert {
             border-radius: 10px;
             border: none;
-            padding: 15px 20px;
+            
         }
         .alert-success {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
+            background:white;
+            color: rgb(0, 0, 0);
+            border: #003308 solid 2px;
         }
         .alert-danger {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
+            color: rgb(0, 0, 0);
         }
         .alert-info {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: #333;
+            background: linear-gradient(135deg, #121212 0%, #575757 100%);
+            color: #fffbfb;
         }
-        .nav-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .nav-link:hover {
-            color: #764ba2;
-        }
+        
         .profile-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -104,6 +84,12 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             padding: 40px;
             margin: 20px 0;
+        }
+        .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
         }
         .profile-header {
             text-align: center;
@@ -124,8 +110,27 @@
     </style>
 </head>
 <body>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark"> 
+            <a class="navbar-brand p-2" href="#">TaskPro</a>
+            <form method="GET" action="" class="d-flex justify-content-center p-2" disabled>
+                <input type="text" name="q" class="form-control me-2" placeholder="Search by title">
+                <button type="submit" class="btn btn-outline-success">Search</button>
+            </form>
+            <ul class="navbar-nav d-flex ms-auto p-2">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'tasklist' %}" ><i class="fas fa-home"></i></a>
+                </li> 
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' %}" ><i class="fas fa-user"></i></a>
+                </li>   
+                
+            </ul>
+        
+            
+        </nav>
     <div class="auth-container">
-        <div class="container">
+        <div class="container ">
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -149,7 +154,7 @@
                 const bsAlert = new bootstrap.Alert(alert);
                 bsAlert.close();
             });
-        }, 10000);
+        }, 5000);
     </script>
 </body>
 </html>
