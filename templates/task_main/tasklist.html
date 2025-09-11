@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between mb-3">
         <a href='{% url "taskcreate" %}' class="btn btn-primary"><i class="fas fa-plus"></i> Create New Task</a>
     </div>
-    {% if tasks %}
+    
     <div>
         Filter by status:
         <a href="{% url 'tasklist' %}?status=pending">Pending</a> |
@@ -17,32 +17,34 @@
         <a href="{% url 'tasklist' %}?status=done">Done</a> |
         <a href="{% url 'tasklist' %}">All</a>
     </div>
-
+{% if tasks %}
     <div class="d-flex-row justify-content-between flex-wrap">
         {% for task in tasks %}
 
         <div class="mb-3">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex align-items-center gap-2">
-                    <input type="checkbox" class="form-check-input" id="id_status" name="status">
-                    <div class="d-flex align-items-center flex-grow-1 gap-2 overflow-hidden">
+                    
+                    <div class="d-flex align-items-center flex-grow-1 gap-6 overflow-hidden">
                         <label for="id_title" class="form-check-label truncate flex-grow-1 mb-0">{{ task.title}}</label>
-                        <span class="text-muted small flex-shrink-0">Due {{ task.expiry|date:"SHORT_DATE_FORMAT"}}</span>
+                        <div class="d-flex-center gap-2">
+                            <span class="text-muted small flex-shrink-0">Due {{ task.expiry|date:"SHORT_DATE_FORMAT"}}</span>
                         <a href="{% url 'taskedit' slug=task.slug %}"
                             class="btn btn-sm btn-outline-primary flex-shrink-0"><i class="fas fa-edit"></i></a>
                         <a href="{% url 'taskdelete' slug=task.slug %}"
                             class="btn btn-sm btn-outline-danger flex-shrink-0"><i class="fas fa-trash"></i></a>
                         <span
                             class="badge rounded-pill bg-{% if task.status == 'done' %}success{% elif task.status == 'in progress' %}primary{% else %}danger{% endif %} flex-shrink-0">
-                            {% if task.status == 'done' %}done{% elif task.status == 'in progress' %}in progress{% else %}pending{% endif %}
+                            {% if task.status == 'done' %}done{% elif task.status == 'in progress' %}inprogress{% else %}pending{% endif %}
                         </span>
+                        </div>
                     </div>
                 </li>
             </ul>
             {% endfor %}
         </div>
         {% else %}
-        <h1>No tasks found</h1>
+        <h5>No tasks found</h5>
     </div>
     {% endif %}
     {% endblock %}

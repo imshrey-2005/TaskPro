@@ -21,7 +21,14 @@ class TaskListView(mixins.ListModelMixin,GenericAPIView):
     
     def get_queryset(self):
         queryset = Tasks.objects.filter(user=self.request.user).order_by('priority')
-        
+        status = self.request.query_params.get('status')
+        sortby = self.request.query_params.get('sortby')
+        if status:
+            print(status)
+            queryset = queryset.filter(status=status)
+            if sortby:
+                print(sortby)
+                queryset.order_by(sortby)
         return queryset
 
     def get(self, request, *args, **kwargs):
@@ -65,7 +72,7 @@ class TaskEditView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericAP
 
     def post(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             messages.success(request, 'Task updated successfully!')
             self.perform_update(serializer)
@@ -94,21 +101,7 @@ class TaskDeleteView(mixins.DestroyModelMixin,GenericAPIView):
         self.perform_destroy(instance)
         messages.success(request, 'Task deleted successfully!')
         return HttpResponseRedirect(reverse('tasklist'))
-class TaskFilterByStatusView(mixins.RetrieveModelMixin,GenericAPIView):
-    permission_classes=[IsAuthenticated,]
-    serializer_class=TaskListCreateSerializer
-    template_name = 'task_main/tasklist.html'
-    def get_queryset(self):
-        query=Tasks.filter(user=self.request.user)
-        status=self.request.query_params.get('status')
-        return query.filter(status=status)
-    def get(self, request):
-        queryset = self.get_queryset()
-        status = self.request.query_params.get('status')
 
-        # When using TemplateHTMLRenderer, you don't need to serialize the data.
-        # Just pass the queryset directly to the Response context.
-        return Response({'tasks': queryset, 'status': status}, template_name=self.template_name)
 
 
 

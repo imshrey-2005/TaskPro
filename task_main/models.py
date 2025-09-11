@@ -9,7 +9,7 @@ class Tasks(models.Model):
     title=models.CharField(max_length=50,)
     slug=models.SlugField(max_length=255,unique=True)
     description=models.CharField(max_length=255)
-    expiry=models.DateField(verbose_name='Due Date',auto_now_add=True)
+    expiry=models.DateField()
     priority=models.CharField(max_length=10,choices=priority_choices,default='Lowest')
     status=models.CharField(choices=status_choices,default='pending')
     user=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
