@@ -3,48 +3,94 @@
 {% block title %}Tasks{% endblock %}
 
 {% block content %}
-
 <div class="auth-card mb-3">
     <h1 class="auth-header">Tasks</h1>
     <div class="d-flex justify-content-between mb-3">
-        <a href='{% url "taskcreate" %}' class="btn btn-primary"><i class="fas fa-plus"></i> Create New Task</a>
+        <a href='{% url "taskcreate" %}' class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Task
+        </a>
+        
     </div>
     
-    <div>
-        Filter by status:
-        <a href="{% url 'tasklist' %}?status=pending">Pending</a> |
-        <a href="{% url 'tasklist' %}?status=in progress">In Progress</a> |
-        <a href="{% url 'tasklist' %}?status=done">Done</a> |
-        <a href="{% url 'tasklist' %}">All</a>
-    </div>
-{% if tasks %}
-    <div class="d-flex-row justify-content-between flex-wrap">
-        {% for task in tasks %}
-
-        <div class="mb-3">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex align-items-center gap-2">
-                    
-                    <div class="d-flex align-items-center flex-grow-1 gap-6 overflow-hidden">
-                        <label for="id_title" class="form-check-label truncate flex-grow-1 mb-0">{{ task.title}}</label>
-                        <div class="d-flex-center gap-2">
-                            <span class="text-muted small flex-shrink-0">Due {{ task.expiry|date:"SHORT_DATE_FORMAT"}}</span>
-                        <a href="{% url 'taskedit' slug=task.slug %}"
-                            class="btn btn-sm btn-outline-primary flex-shrink-0"><i class="fas fa-edit"></i></a>
-                        <a href="{% url 'taskdelete' slug=task.slug %}"
-                            class="btn btn-sm btn-outline-danger flex-shrink-0"><i class="fas fa-trash"></i></a>
-                        <span
-                            class="badge rounded-pill bg-{% if task.status == 'done' %}success{% elif task.status == 'in progress' %}primary{% else %}danger{% endif %} flex-shrink-0">
-                            {% if task.status == 'done' %}done{% elif task.status == 'in progress' %}inprogress{% else %}pending{% endif %}
-                        </span>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            {% endfor %}
+    <!-- Filter Section -->
+    <div class="mb-4">
+        <label class="me-2 fw-bold">Filter by status:</label>
+        <div class="btn-group" role="group" aria-label="Filter tasks">
+            <a href="{% url 'tasklist' %}?status=pending" 
+               class="btn btn-outline-danger {% if request.GET.status == 'pending' %}active{% endif %}">
+                Pending
+            </a>
+            <a href="{% url 'tasklist' %}?status=in progress" 
+               class="btn btn-outline-primary {% if request.GET.status == 'in progress' %}active{% endif %}">
+                In Progress
+            </a>
+            <a href="{% url 'tasklist' %}?status=done" 
+               class="btn btn-outline-success {% if request.GET.status == 'done' %}active{% endif %}">
+                Done
+            </a>
+            <a href="{% url 'tasklist' %}" 
+               class="btn btn-outline-secondary {% if not request.GET.status %}active{% endif %}">
+                All
+            </a>
         </div>
-        {% else %}
-        <h5>No tasks found</h5>
     </div>
+
+    {% if tasks %}
+    <div class="table-responsive">
+    <table class="table table-borderless align-middle w-100">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Done</th>
+                <th scope="col">Task Title</th>
+                <th scope="col">Due Date</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td class="text-center" style="white-space: nowrap;">
+                    <form action="{% url 'tasktoggle' slug=task.slug %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="checkbox" 
+                               {% if task.status == 'done' %}checked{% endif %} 
+                               value="done" 
+                               onchange="this.form.submit()" 
+                               class="form-check-input">
+                    </form>
+                </td>
+                <td class="text-wrap">
+                    {{ task.title }}
+                </td>
+                <td style="white-space: nowrap;">
+                    {{ task.expiry }}
+                </td>
+                <td style="white-space: nowrap;">
+                    <span class="badge rounded-pill bg-{% if task.status == 'done' %}success{% elif task.status == 'in progress' %}primary{% else %}danger{% endif %}">
+                        {{ task.status }}
+                    </span>
+                </td>
+                <td class="text-center" style="white-space: nowrap;">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <a href="{% url 'taskedit' slug=task.slug %}" class="btn btn-sm btn-outline-primary me-1">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'taskdelete' slug=task.slug %}" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+    </div>
+    {% else %}
+        <h5>No tasks found</h5>
     {% endif %}
-    {% endblock %}
+</div>
+{% endblock %}
