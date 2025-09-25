@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework import status
-from .serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordSerializer,UserResetPasswordEmailSerializer,UserResetPasswordSerializer
+from .serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserChangePasswordSerializer,UserResetPasswordEmailSerializer,UserResetPasswordSerializer,MyTokenObtainPairSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
@@ -31,10 +31,11 @@ def home_view(request):
         #need to show task dashboard
         return redirect('tasklist')
     return render(request, 'index.html')
+    
 class UserRegistrationView(GenericAPIView):
     permission_classes=[AllowAny,]
     serializer_class = UserRegistrationSerializer
-    renderer_classes=[TemplateHTMLRenderer]
+    renderer_classes=[TemplateHTMLRenderer,JSONRenderer]
 
     def get(self, request):
         return Response({}, template_name='accounts/register.html')
@@ -55,12 +56,13 @@ class UserRegistrationView(GenericAPIView):
 class UserLoginView(GenericAPIView):
     permission_classes=[AllowAny,]
     serializer_class = UserLoginSerializer
-    renderer_classes=[TemplateHTMLRenderer]
+    renderer_classes=[TemplateHTMLRenderer,JSONRenderer]
 
     def get(self, request):
         if request.user.is_authenticated:
+            Response({'message': 'You are already logged in.'})
             return redirect('tasklist')
-        return Response({}, template_name='accounts/login.html')
+        return Response({'message': 'Please log in to access this page.'}, template_name='accounts/login.html')
 
     def post(self, request):
         serializer=self.get_serializer(data=request.data)
@@ -88,7 +90,7 @@ class UserLogoutAPIView(GenericAPIView):
     """
 
     permission_classes = [IsAuthenticated,]
-    renderer_classes=[TemplateHTMLRenderer]
+    renderer_classes=[TemplateHTMLRenderer,JSONRenderer]
 
     def get(self, request):
         refresh_token = request.data.get("refresh")
@@ -117,10 +119,11 @@ class UserLogoutAPIView(GenericAPIView):
 class UserProfileView(GenericAPIView):
     permission_classes=[IsAuthenticated,]
     serializer_class=UserProfileSerializer
-    renderer_classes=[TemplateHTMLRenderer]
+    renderer_classes=[TemplateHTMLRenderer,JSONRenderer]
 
     def get(self,request):
-        return Response({'user': request.user}, template_name='accounts/profile.html')
+        serializer=self.get_serializer(request.user)
+        return Response({'user': serializer.data}, template_name='accounts/profile.html')
 
     def handle_exception(self, exc):
         from rest_framework.exceptions import NotAuthenticated
@@ -132,7 +135,7 @@ class UserProfileView(GenericAPIView):
 
 class UserChangePasswordView(GenericAPIView):
     serializer_class=UserChangePasswordSerializer
-    renderer_classes=[TemplateHTMLRenderer]
+    renderer_classes=[TemplateHTMLRenderer,JSONRenderer]
     
 
     def get(self, request):
@@ -151,7 +154,7 @@ class UserChangePasswordView(GenericAPIView):
 
 class UserResetPasswordEmailView(GenericAPIView):
     serializer_class=UserResetPasswordEmailSerializer
-    renderer_classes=[TemplateHTMLRenderer]
+    renderer_classes=[TemplateHTMLRenderer,JSONRenderer]
     
     def get(self, request):
         return Response({}, template_name='accounts/reset_password_email.html')
@@ -171,7 +174,7 @@ class UserResetPasswordEmailView(GenericAPIView):
 class UserResetPasswordView(GenericAPIView):
    
     serializer_class=UserResetPasswordSerializer
-    renderer_classes=[TemplateHTMLRenderer]
+    renderer_classes=[TemplateHTMLRenderer,JSONRenderer]
     
     def get(self, request, uid, token):
         return Response({'uid': uid, 'token': token}, template_name='accounts/reset_password.html')
@@ -187,7 +190,11 @@ class UserResetPasswordView(GenericAPIView):
                     messages.error(request, f"{field}: {error}")
             return Response({'uid': uid, 'token': token, 'errors': serializer.errors}, template_name='accounts/reset_password.html')
 
+from rest_framework_simplejwt.views import TokenObtainPairView
 
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+    renderer_classes = [JSONRenderer] 
 
     
 
