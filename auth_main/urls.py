@@ -17,15 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,TokenVerifyView
-from accounts.views import home_view
+from accounts.views import home_view,MyTokenObtainPairView
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
 
+def csrf_token_view(request):
+    return JsonResponse({"csrfToken": request.META.get("CSRF_COOKIE")})
 
 urlpatterns = [
     path('', home_view, name='home'),
     path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('accounts/', include('accounts.urls')),
     path('tasks/', include('task_main.urls')),
+    path("csrf/", ensure_csrf_cookie(csrf_token_view)),
 ]
